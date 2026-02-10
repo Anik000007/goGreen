@@ -5,6 +5,27 @@ import random from "random";
 
 const path = "./data.json";
 
+// Parse command-line arguments
+const getCommitCount = () => {
+  const args = process.argv.slice(2);
+  const commitCountArg = args[0];
+
+  if (!commitCountArg) {
+    console.log("📝 No commit count specified. Using default: 100");
+    return 100;
+  }
+
+  const count = parseInt(commitCountArg, 10);
+
+  if (isNaN(count) || count < 1) {
+    console.error("❌ Error: Commit count must be a positive integer");
+    process.exit(1);
+  }
+
+  console.log(`📝 Creating ${count} commits...`);
+  return count;
+};
+
 // Extract date calculation to avoid redundant computation
 const calculateDate = (weekOffset, dayOffset) => {
   return dayjs()
@@ -13,42 +34,29 @@ const calculateDate = (weekOffset, dayOffset) => {
     .add(weekOffset, "week")
     .add(dayOffset, "day")
     .format();
+
+  const data = {
+    date: date,
+  };
+
+  jsonfile.writeFile(path, data, () => {
+    simpleGit().add([path]).commit(date, { "--date": date }).push();
+  });
 };
 
-// Refactored to use async/await with iteration for better performance
-const makeCommits = async (git, n) => {
-  for (let i = 0; i < n; i++) {
-    const x = random.int(0, 54);
-    const y = random.int(0, 6);
-    const date = calculateDate(x, y);
+const makeCommits = (n) => {
+  if(n===0) return simpleGit().push();
+  const x = random.int(0, 54);
+  const y = random.int(0, 6);
+  const date = moment().subtract(1, "y").add(1, "d").add(x, "w").add(y, "d").format();
 
-    const data = {
-      date: date,
-    };
-
-    try {
-      console.log(date);
-      await jsonfile.writeFile(path, data);
-      await git.add([path]);
-      await git.commit(date, { "--date": date });
-    } catch (error) {
-      console.error(`Error creating commit ${i + 1}/${n}: ${error.message}`);
-      throw error;
-    }
-  }
+  const data = {
+    date: date,
+  };
+  console.log(date);
+  jsonfile.writeFile(path, data, () => {
+    simpleGit().add([path]).commit(date, { "--date": date },makeCommits.bind(this,--n));
+  });
 };
 
-// Execute commits and push at the end
-(async () => {
-  const git = simpleGit();
-  
-  try {
-    await makeCommits(git, 100);
-    console.log("All commits created successfully. Pushing to remote...");
-    await git.push();
-    console.log("Push completed successfully.");
-  } catch (error) {
-    console.error(`Failed to complete operation: ${error.message}`);
-    process.exit(1);
-  }
-})();
+makeCommits(100);
