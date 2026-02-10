@@ -24,7 +24,7 @@ npm init -y
 3. **Install the required npm modules**
 You'll need a few modules to get everything running smoothly. Install them all with:
   ```bash
-  npm install moment simple-git random
+  npm install dayjs simple-git random jsonfile
   ```
 4. **Create your commit script**
 - Create a JavaScript file to manage your commits.
@@ -40,9 +40,10 @@ So, you've got the basics down. What's next?
 
 ## npm Modules Used
 
-- [`moment`](https://www.npmjs.com/package/moment) - Handles date and time manipulation.
+- [`dayjs`](https://www.npmjs.com/package/dayjs) - Modern, lightweight date and time manipulation library (actively maintained alternative to moment.js).
 - [`simple-git`](https://www.npmjs.com/package/simple-git) - For easy Git commands.
 - [`random`](https://www.npmjs.com/package/random) - To generate random numbers for the commits.
+- [`jsonfile`](https://www.npmjs.com/package/jsonfile) - Easily read/write JSON files with proper async support.
 
 ## Credits
 

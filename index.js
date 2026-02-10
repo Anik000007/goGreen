@@ -1,5 +1,5 @@
 import jsonfile from "jsonfile";
-import moment from "moment";
+import dayjs from "dayjs";
 import simpleGit from "simple-git";
 import random from "random";
 
@@ -26,87 +26,37 @@ const getCommitCount = () => {
   return count;
 };
 
-const markCommit = (x, y) => {
-  const date = moment()
-    .subtract(1, "y")
-    .add(1, "d")
-    .add(x, "w")
-    .add(y, "d")
+// Extract date calculation to avoid redundant computation
+const calculateDate = (weekOffset, dayOffset) => {
+  return dayjs()
+    .subtract(1, "year")
+    .add(1, "day")
+    .add(weekOffset, "week")
+    .add(dayOffset, "day")
     .format();
 
   const data = {
     date: date,
   };
 
-  jsonfile.writeFile(path, data, (err) => {
-    if (err) {
-      console.error("❌ Error writing to data.json:", err);
-      return;
-    }
-
-    simpleGit()
-      .add([path])
-      .commit(date, { "--date": date })
-      .push()
-      .catch((err) => {
-        console.error("❌ Error committing or pushing:", err);
-      });
+  jsonfile.writeFile(path, data, () => {
+    simpleGit().add([path]).commit(date, { "--date": date }).push();
   });
 };
 
-const makeCommits = (n, total) => {
-  if(n === 0) {
-    return simpleGit()
-      .push()
-      .then(() => {
-        console.log("✅ All commits completed successfully!");
-      })
-      .catch((err) => {
-        console.error("❌ Error during final push:", err);
-        process.exit(1);
-      });
-  }
-
+const makeCommits = (n) => {
+  if(n===0) return simpleGit().push();
   const x = random.int(0, 54);
   const y = random.int(0, 6);
-  const date = moment()
-    .subtract(1, "y")
-    .add(1, "d")
-    .add(x, "w")
-    .add(y, "d")
-    .format();
+  const date = moment().subtract(1, "y").add(1, "d").add(x, "w").add(y, "d").format();
 
   const data = {
     date: date,
   };
-
-  const progress = ((total - n + 1) / total * 100).toFixed(1);
-  console.log(`[${progress}%] Creating commit: ${date}`);
-
-  jsonfile.writeFile(path, data, (err) => {
-    if (err) {
-      console.error("❌ Error writing to data.json:", err);
-      process.exit(1);
-    }
-
-    simpleGit()
-      .add([path])
-      .commit(date, { "--date": date })
-      .then(() => {
-        makeCommits(--n, total);
-      })
-      .catch((err) => {
-        console.error("❌ Error committing:", err);
-        process.exit(1);
-      });
+  console.log(date);
+  jsonfile.writeFile(path, data, () => {
+    simpleGit().add([path]).commit(date, { "--date": date },makeCommits.bind(this,--n));
   });
 };
 
-// Main execution
-try {
-  const commitCount = getCommitCount();
-  makeCommits(commitCount, commitCount);
-} catch (err) {
-  console.error("❌ Fatal error:", err);
-  process.exit(1);
-}
+makeCommits(100);
