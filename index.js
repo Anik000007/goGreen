@@ -15,37 +15,39 @@ const calculateDate = (weekOffset, dayOffset) => {
     .format();
 };
 
-// Refactored to use async/await for better performance and error handling
+// Refactored to use async/await with iteration for better performance
 const makeCommits = async (n) => {
-  if (n === 0) return;
+  const git = simpleGit();
+  
+  for (let i = 0; i < n; i++) {
+    const x = random.int(0, 54);
+    const y = random.int(0, 6);
+    const date = calculateDate(x, y);
 
-  const x = random.int(0, 54);
-  const y = random.int(0, 6);
-  const date = calculateDate(x, y);
+    const data = {
+      date: date,
+    };
 
-  const data = {
-    date: date,
-  };
-
-  try {
-    console.log(date);
-    await jsonfile.writeFile(path, data);
-    const git = simpleGit();
-    await git.add([path]);
-    await git.commit(date, { "--date": date });
-    await makeCommits(n - 1);
-  } catch (error) {
-    console.error(`Error creating commit: ${error.message}`);
-    throw error;
+    try {
+      console.log(date);
+      await jsonfile.writeFile(path, data);
+      await git.add([path]);
+      await git.commit(date, { "--date": date });
+    } catch (error) {
+      console.error(`Error creating commit ${i + 1}/${n}: ${error.message}`);
+      throw error;
+    }
   }
 };
 
 // Execute commits and push at the end
 (async () => {
+  const git = simpleGit();
+  
   try {
     await makeCommits(100);
     console.log("All commits created successfully. Pushing to remote...");
-    await simpleGit().push();
+    await git.push();
     console.log("Push completed successfully.");
   } catch (error) {
     console.error(`Failed to complete operation: ${error.message}`);
