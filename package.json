@@ -1,7 +1,7 @@
 {
-  "name": "thomyorke",
-  "version": "1.0.0",
-  "description": "nice dream",
+  "name": "gogreen",
+  "version": "2.0.0",
+  "description": "Make your GitHub contribution graph green — random commits or pixel art text",
   "main": "index.js",
   "type": "module",
   "scripts": {
