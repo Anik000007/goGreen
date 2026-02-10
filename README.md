@@ -40,7 +40,7 @@ So, you've got the basics down. What's next?
 
 ## npm Modules Used
 
-- [`dayjs`](https://www.npmjs.com/package/dayjs) - Modern, lightweight date and time manipulation library (replaces deprecated moment.js).
+- [`dayjs`](https://www.npmjs.com/package/dayjs) - Modern, lightweight date and time manipulation library (actively maintained alternative to moment.js).
 - [`simple-git`](https://www.npmjs.com/package/simple-git) - For easy Git commands.
 - [`random`](https://www.npmjs.com/package/random) - To generate random numbers for the commits.
 - [`jsonfile`](https://www.npmjs.com/package/jsonfile) - Easily read/write JSON files with proper async support.

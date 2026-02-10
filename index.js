@@ -16,9 +16,7 @@ const calculateDate = (weekOffset, dayOffset) => {
 };
 
 // Refactored to use async/await with iteration for better performance
-const makeCommits = async (n) => {
-  const git = simpleGit();
-  
+const makeCommits = async (git, n) => {
   for (let i = 0; i < n; i++) {
     const x = random.int(0, 54);
     const y = random.int(0, 6);
@@ -45,7 +43,7 @@ const makeCommits = async (n) => {
   const git = simpleGit();
   
   try {
-    await makeCommits(100);
+    await makeCommits(git, 100);
     console.log("All commits created successfully. Pushing to remote...");
     await git.push();
     console.log("Push completed successfully.");
